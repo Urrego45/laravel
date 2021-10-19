@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Factura;
+use App\Models\Perdida;
 use Illuminate\Http\Request;
 
 class FacturasController extends Controller
@@ -37,7 +38,18 @@ class FacturasController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $request->validate([
+            'nombre' => 'required|max:255',
+            'valor'=> 'required|max:255',
+        ]);        
+
+        $factura = new Factura;
+        $factura->id = rand(1000000000000000, 9999999999999990);
+        $factura->nombre = $request->nombre;
+        $factura->valor = $request->valor;
+        $factura->save();
+
+        return redirect()->route('factura.index');
     }
 
     /**
@@ -48,7 +60,8 @@ class FacturasController extends Controller
      */
     public function show($id)
     {
-        //
+        $factura = Factura::find($id);
+        return view('factura.show', ['factura' => $factura]);
     }
 
     /**
@@ -71,7 +84,12 @@ class FacturasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $factura = Factura::find($id);
+        $factura->nombre = $request->nombre;
+        $factura->valor = $request->valor;
+        $factura->save();
+
+        return redirect()->route('factura.index');
     }
 
     /**
@@ -80,8 +98,16 @@ class FacturasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $factura = Factura::find($id);
+        $perdida = new Perdida;
+        $perdida->id_facturas = strval($factura->id);
+        $perdida->nombre = $factura->nombre;
+        $perdida->valor = $factura->valor;
+        $perdida->save();
+
+        $factura->delete();
+        return redirect()->route('factura.index');
     }
 }

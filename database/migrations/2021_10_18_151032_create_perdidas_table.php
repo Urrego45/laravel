@@ -16,6 +16,8 @@ class CreatePerdidasTable extends Migration
         Schema::create('perdidas', function (Blueprint $table) {
             $table->id('id')->autoIncrement();
             $table->string('id_facturas', 20);
+            $table->string('nombre');
+            $table->integer('valor');
             $table->timestamps();
         });
     }

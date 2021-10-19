@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Perdida;
+use App\Models\Factura;
 use Illuminate\Http\Request;
 
 class PerdidasController extends Controller
@@ -26,7 +27,7 @@ class PerdidasController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -82,6 +83,16 @@ class PerdidasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $perdida = Perdida::find($id);
+
+        $factura = new Factura;
+
+        $factura->id = rand(1000000000000000, 9999999999999990);
+        $factura->nombre = $perdida->nombre;
+        $factura->valor = $perdida->valor;
+        $factura->save();
+
+        $perdida->delete();
+        return redirect()->route('factura.index');
     }
 }
